@@ -24,12 +24,11 @@ namespace Alura.Loja.Testes.ConsoleApp
             RecuperarProdutos();
 
             //Atualizar Produto
-            using(var repo = new LojaContext())
+            using(var repo = new ProdutoDAOEntity())
             {
-                Produto produto = repo.Produtos.First();
+                Produto produto = repo.Produtos().First();
                 produto.Nome = "Harry Potter e o Cálice de Fogo";
-                repo.Produtos.Update(produto);
-                repo.SaveChanges();
+                repo.Atualizar(produto);
             }
             RecuperarProdutos();
 
@@ -37,22 +36,21 @@ namespace Alura.Loja.Testes.ConsoleApp
 
         private static void ExcluirProdutos()
         {
-            using(var repo = new LojaContext())
+            using(var repo = new ProdutoDAOEntity())
             {
-                IList<Produto> produtos = repo.Produtos.ToList();
+                IList<Produto> produtos = repo.Produtos();
                 foreach(var item in produtos)
                 {
-                    repo.Produtos.Remove(item);
+                    repo.Remover(item);
                 }
-                repo.SaveChanges();
             }
         }
 
         private static void RecuperarProdutos()
         {
-            using(var repo = new LojaContext())
+            using(var repo = new ProdutoDAOEntity())
             {
-                IList<Produto> produtos = repo.Produtos.ToList();
+                IList<Produto> produtos = repo.Produtos();
                 Console.WriteLine("Foram encontrados {0} produtos", produtos.Count);
 
                 foreach(var produto in produtos)
@@ -69,10 +67,9 @@ namespace Alura.Loja.Testes.ConsoleApp
             p.Categoria = "Livros";
             p.Preco = 19.89;
 
-            using (var contexto = new LojaContext())
+            using (var contexto = new ProdutoDAOEntity())
             {
-                contexto.Produtos.Add(p);
-                contexto.SaveChanges();
+                contexto.Adicionar(p);
             }
         }
 
