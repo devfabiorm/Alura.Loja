@@ -13,8 +13,26 @@ namespace Alura.Loja.Testes.ConsoleApp
             //GravarUsandoAdoNet();
             //GravarUsandoEntity();
             //RecuperarProdutos();
-            ExcluirProdutos();
+            //ExcluirProdutos();
+            AtualizarProduto();
+        }
+
+        private static void AtualizarProduto()
+        {
+            //Incluir produto
+            GravarUsandoEntity();
             RecuperarProdutos();
+
+            //Atualizar Produto
+            using(var repo = new LojaContext())
+            {
+                Produto produto = repo.Produtos.First();
+                produto.Nome = "Harry Potter e o Cálice de Fogo";
+                repo.Produtos.Update(produto);
+                repo.SaveChanges();
+            }
+            RecuperarProdutos();
+
         }
 
         private static void ExcluirProdutos()
