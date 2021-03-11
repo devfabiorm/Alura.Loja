@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Infrastructure;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -20,32 +21,29 @@ namespace Alura.Loja.Testes.ConsoleApp
                 loggerFactory.AddProvider(SqlLoggerProvider.Create());
 
                 var produtos = contexto.Produtos.ToList();
-                foreach(var produto in produtos)
-                {
-                    Console.WriteLine(produto);
-                }
+                ExibeEntries(contexto.ChangeTracker.Entries());
 
-                foreach (var e in contexto.ChangeTracker.Entries())
+                var novoProduto = new Produto
                 {
-                    Console.WriteLine(e.State);
-                }
+                    Nome = "Desinfetante",
+                    Categoria = "Limpeza",
+                    Preco = 2.99
+                };
 
-                var p1 = contexto.Produtos.Last();
-                p1.Nome = "007 - O espião que em amava";
-
-                foreach (var e in contexto.ChangeTracker.Entries())
-                {
-                    Console.WriteLine(e.State);
-                }
+                contexto.Produtos.Add(novoProduto);
+                ExibeEntries(contexto.ChangeTracker.Entries());
 
                 contexto.SaveChanges();
+                ExibeEntries(contexto.ChangeTracker.Entries());
+            }
+        }
 
-                //Console.WriteLine("==============");
-                //produtos = contexto.Produtos.ToList();
-                //foreach (var produto in produtos)
-                //{
-                //    Console.WriteLine(produto);
-                //}
+        private static void ExibeEntries(IEnumerable<EntityEntry> entries)
+        {
+            Console.WriteLine("==========================================");
+            foreach (var e in entries)
+            {
+                Console.WriteLine(e.Entity.ToString() + "-" + e.State);
             }
         }
     }
