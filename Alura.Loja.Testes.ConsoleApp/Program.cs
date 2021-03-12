@@ -14,6 +14,30 @@ namespace Alura.Loja.Testes.ConsoleApp
     {
         static void Main(string[] args)
         {
+            var fulano = new Cliente();
+            fulano.Nome = "Fulaninho de Tal";
+            fulano.EnderecoDeEntrega = new Endereco()
+            {
+                Numero = 12,
+                Logradouro = "Rua dos inválidos",
+                Complemento = "Sobrado",
+                Bairro = "Centro",
+                Cidade = "Cidade"
+            };
+
+            using(var contexto = new LojaContext())
+            {
+                var serviceProvider = contexto.GetInfrastructure<IServiceProvider>();
+                var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
+                loggerFactory.AddProvider(SqlLoggerProvider.Create());
+
+                contexto.Clientes.Add(fulano);
+                contexto.SaveChanges();
+            }
+        }
+
+        static void MuitosParaMuitos()
+        {
             var p1 = new Produto() { Nome = "Suco de Laranja", Categoria = "Bebidas", PrecoUnitario = 8.79, Unidade = "Litros" };
             var p2 = new Produto() { Nome = "Café", Categoria = "Bebidas", PrecoUnitario = 12.45, Unidade = "Gramas" };
             var p3 = new Produto() { Nome = "Macarrão", Categoria = "Alimentos", PrecoUnitario = 4.23, Unidade = "Gramas" };
@@ -27,7 +51,7 @@ namespace Alura.Loja.Testes.ConsoleApp
             promocaoDePascoa.IncluiProduto(p2);
             promocaoDePascoa.IncluiProduto(p3);
 
-            using(var contexto = new LojaContext())
+            using (var contexto = new LojaContext())
             {
                 var serviceProvider = contexto.GetInfrastructure<IServiceProvider>();
                 var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
@@ -35,6 +59,14 @@ namespace Alura.Loja.Testes.ConsoleApp
 
                 contexto.Promocoes.Add(promocaoDePascoa);
                 contexto.SaveChanges();
+            }
+        }
+
+        private static void ExibeEntries(IEnumerable<EntityEntry> entries)
+        {
+            foreach(var e in entries)
+            {
+                Console.WriteLine(e.Entity.ToString() + " - " + e.State);
             }
         }
     }
