@@ -15,6 +15,35 @@ namespace Alura.Loja.Testes.ConsoleApp
     {
         static void Main(string[] args)
         {
+            using (var context = new LojaContext())
+            {
+                var serviceProvider = context.GetInfrastructure<IServiceProvider>();
+                var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
+                loggerFactory.AddProvider(SqlLoggerProvider.Create());
+
+                var cliente = context
+                    .Clientes
+                    .Include(c => c.EnderecoDeEntrega)
+                    .FirstOrDefault();
+
+                Console.WriteLine($"Endereço de entrega: {cliente.EnderecoDeEntrega.Logradouro}");
+
+                var produto = context
+                    .Produtos
+                    .Include(P => P.Compras)
+                    .Where(p => p.Id == 2002)
+                    .FirstOrDefault();
+
+                Console.WriteLine($"Mostrando as compras do produto {produto.Nome}:\n");
+                foreach (var item in produto.Compras)
+                {
+                    Console.WriteLine(item);
+                }
+            }
+        }
+
+        private static void ExibiProdutosdaPromocao()
+        {
             using (var contexto2 = new LojaContext())
             {
                 var promocao = contexto2
