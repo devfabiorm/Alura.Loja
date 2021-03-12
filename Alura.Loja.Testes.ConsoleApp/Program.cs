@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,51 @@ namespace Alura.Loja.Testes.ConsoleApp
     {
         static void Main(string[] args)
         {
+            using (var contexto2 = new LojaContext())
+            {
+                var promocao = contexto2
+                    .Promocoes
+                    .Include(p => p.Produtos)
+                    .ThenInclude(pp => pp.Produto)
+                    .FirstOrDefault();
+
+                Console.WriteLine("\nMostrando os produtos da promoção...");
+                foreach (var item in promocao.Produtos)
+                {
+                    Console.WriteLine(item.Produto);
+                }
+            }
+        }
+
+        private static void IncluirPromocao()
+        {
+            using (var contexto = new LojaContext())
+            {
+                var promocao = new Promocao()
+                {
+                    Descricao = "Queima Total Janeiro 2021",
+                    DataInicio = new DateTime(2021, 1, 1),
+                    DataTermino = new DateTime(2021, 1, 31)
+                };
+
+                var produtos = contexto
+                    .Produtos
+                    .Where(p => p.Categoria == "Bebidas")
+                    .ToList();
+
+                foreach (var item in produtos)
+                {
+                    promocao.IncluiProduto(item);
+                }
+
+                contexto.Promocoes.Add(promocao);
+
+                contexto.SaveChanges();
+            }
+        }
+
+        private static void UmParaUm()
+        {
             var fulano = new Cliente();
             fulano.Nome = "Fulaninho de Tal";
             fulano.EnderecoDeEntrega = new Endereco()
@@ -25,7 +71,7 @@ namespace Alura.Loja.Testes.ConsoleApp
                 Cidade = "Cidade"
             };
 
-            using(var contexto = new LojaContext())
+            using (var contexto = new LojaContext())
             {
                 var serviceProvider = contexto.GetInfrastructure<IServiceProvider>();
                 var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
