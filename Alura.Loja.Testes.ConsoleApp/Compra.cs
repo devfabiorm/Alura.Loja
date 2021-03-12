@@ -10,7 +10,7 @@
 
         public override string ToString()
         {
-            return $"Compra de {Quantidade} {Produto.Nome}";
+            return $"Compra de {Quantidade} {Produto.Nome} no valor de R$ {Preco}";
         }
     }
 }

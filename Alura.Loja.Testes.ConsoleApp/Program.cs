@@ -30,9 +30,14 @@ namespace Alura.Loja.Testes.ConsoleApp
 
                 var produto = context
                     .Produtos
-                    .Include(P => P.Compras)
                     .Where(p => p.Id == 2002)
                     .FirstOrDefault();
+
+                context.Entry(produto)
+                    .Collection(p => p.Compras)
+                    .Query()
+                    .Where(c => c.Preco <= 10)
+                    .Load();
 
                 Console.WriteLine($"Mostrando as compras do produto {produto.Nome}:\n");
                 foreach (var item in produto.Compras)
